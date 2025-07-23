@@ -1,72 +1,74 @@
-# Getting Started with Create React App
+# ArXiv Paper Recommendation Engine
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is a sophisticated paper recommendation system that leverages the vast arXiv dataset of scholarly articles. It utilizes state-of-the-art natural language processing techniques to understand the semantic content of paper abstracts and recommend similar articles. The system is composed of a data preparation pipeline built with Python and a user-facing chat interface developed in React.
 
-## Available Scripts
+## Project Overview
 
-In the project directory, you can run:
+The core of this project is to provide users with relevant paper recommendations based on a query. It achieves this by:
 
-### `npm start`
+1.  **Processing a large dataset of arXiv papers:** The system starts with a snapshot of the arXiv metadata, containing information like titles, authors, and abstracts for over 2 million papers.
+2.  **Generating semantic embeddings:** Using a powerful SentenceTransformer model, it converts the abstract of each paper into a high-dimensional vector representation (embedding). These embeddings capture the semantic meaning of the text.
+3.  **Storing embeddings efficiently:** The generated embeddings are stored in a Parquet file, a columnar storage format optimized for large-scale data analysis.
+4.  **Providing an interactive interface:** A React-based chat application allows users to input a topic or abstract, which is then used to find and display the most similar papers from the dataset.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Components
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 1. Data Preparation (`data_preparation.ipynb`)
 
-### `npm test`
+This Jupyter Notebook is the heart of the data processing pipeline. It performs the following key steps:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+*   **Data Loading and Parsing:** It reads the `arxiv-metadata-oai-snapshot.json` file, parsing each line as a JSON record to extract the title, authors, abstract, and publication year.
+*   **Initial Data Storage:** The parsed data is initially stored in a pandas DataFrame for ease of manipulation.
+*   **Efficient Serialization:** The pandas DataFrame is then converted to a Polars DataFrame and saved as a Parquet file (`arxiv_abstracts.parquet`). Polars is a highly efficient DataFrame library, and Parquet is a columnar storage format that is well-suited for large datasets.
+*   **Embedding Generation:** It utilizes the `sentence-transformers` library to load a pre-trained model (`jinaai/jina-embeddings-v3`) and generate embeddings for all the paper abstracts. This process is computationally intensive and is accelerated using a CUDA-enabled GPU.
+*   **Chunking and Merging:** To handle the large volume of data and embeddings, the notebook processes the data in chunks, saves them as individual Parquet files, and then efficiently merges them into a single, comprehensive Parquet file (`arxiv_embeddings_full.parquet`).
 
-### `npm run build`
+### 2. Frontend Application
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The frontend is a single-page application built with React. It provides a user-friendly interface for interacting with the recommendation engine.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+*   **`App.js` and `index.js`:** These are the main entry points for the React application.
+*   **`ChatPage.js` (Inferred):** The CSS file `ChatPage.css` strongly suggests the existence of a `ChatPage.js` component. This component is responsible for rendering the chat interface, handling user input, and displaying the conversation history, including the paper recommendations.
+*   **Styling (`App.css`, `ChatPage.css`, `index.css`):** These files contain the CSS rules for styling the application, giving it a clean and modern look.
+*   **Testing (`App.test.js`, `setupTests.js`):** The project includes a basic testing setup using React Testing Library and Jest to ensure the application's components render correctly.
+*   **Web Vitals (`reportWebVitals.js`):** This file includes functionality to measure and report on the performance of the web application.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## How to Run
 
-### `npm run eject`
+### Prerequisites
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+*   Python 3.x
+*   Node.js and npm
+*   A CUDA-enabled GPU is highly recommended for the data preparation step.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Data Preparation
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1.  **Download the dataset:** Obtain the `arxiv-metadata-oai-snapshot.json` file from the [arXiv dataset on Kaggle](https://www.kaggle.com/datasets/Cornell-University/arxiv).
+2.  **Install Python dependencies:**
+    ```bash
+    pip install pandas polars sentence-transformers torch pyarrow tqdm jupyter
+    ```
+3.  **Run the Jupyter Notebook:** Execute the cells in `data_preparation.ipynb` sequentially. This will generate the `arxiv_embeddings_full.parquet` file.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Frontend Application
 
-## Learn More
+1.  **Navigate to the frontend directory:**
+    ```bash
+    cd path/to/your/react/app
+    ```
+2.  **Install Node.js dependencies:**
+    ```bash
+    npm install
+    ```
+3.  **Start the development server:**
+    ```bash
+    npm start
+    ```
+4.  Open your browser and go to `http://localhost:3000` to interact with the chat interface.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Future Enhancements
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# research-assistant
-# research-assistant
+*   **Backend API:** Develop a backend API (e.g., using Flask or FastAPI) to serve the paper recommendations. The React application would then fetch data from this API.
+*   **Advanced Filtering:** Implement options to filter recommendations by year, author, or category.
+*   **User Profiles:** Allow users to create profiles and save their search history and favorite papers.
+*   **Scalability:** For even larger datasets, consider using a distributed computing framework like Spark for the data preparation and a dedicated vector database for storing and querying the embeddings.
