@@ -28,7 +28,6 @@ This Jupyter Notebook is the heart of the data processing pipeline. It performs 
 The frontend is a single-page application built with React. It provides a user-friendly interface for interacting with the recommendation engine.
 
 *   **`App.js` and `index.js`:** These are the main entry points for the React application.
-*   **`ChatPage.js` (Inferred):** The CSS file `ChatPage.css` strongly suggests the existence of a `ChatPage.js` component. This component is responsible for rendering the chat interface, handling user input, and displaying the conversation history, including the paper recommendations.
 *   **Styling (`App.css`, `ChatPage.css`, `index.css`):** These files contain the CSS rules for styling the application, giving it a clean and modern look.
 *   **Testing (`App.test.js`, `setupTests.js`):** The project includes a basic testing setup using React Testing Library and Jest to ensure the application's components render correctly.
 *   **Web Vitals (`reportWebVitals.js`):** This file includes functionality to measure and report on the performance of the web application.
